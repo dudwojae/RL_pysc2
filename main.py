@@ -48,7 +48,7 @@ def main(_):
             raise NotImplementedError()
 
         preprocess = Preprocess()
-        game = MiniGame(map_name, learner, preprocess, nb_episodes=10000)
+        game = MiniGame(map_name, learner, preprocess, nb_episodes=50000)
         game.run_ddpg()
     return 0
 
