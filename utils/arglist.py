@@ -23,8 +23,8 @@ class DDPG:
     GAMMA = 0.99
     TAU = 0.001
     LEARNINGRATE = 0.0001
-    BatchSize = 128
-    memory_limit = int(5e5)
+    BatchSize = 64
+    memory_limit = int(5e4)
 
 
 # PPO parameters
