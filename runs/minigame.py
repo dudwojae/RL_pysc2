@@ -38,11 +38,11 @@ class MiniGame:
     def run_ddpg(self, is_training=True):
         cum_reward_best = 0
         self.write_history(self.map_name + '_history_ddpg.txt', msg=None)
-        
+
         while True:
             for i_episode in range(self.nb_episodes):
-                state = self.env.reset()[0]
                 try:
+                    state = self.env.reset()[0]
                     for t in range(self.nb_max_steps):  # Don't infinite loop while learning
                         obs = self.preprocess.get_observation(state)
                         actions = self.learner.select_action(obs, valid_actions=obs['nonspatial'])
