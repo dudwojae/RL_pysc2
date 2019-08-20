@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from pysc2.lib import actions
 
-DEVICE = torch.device('cuda:0')
+DEVICE = torch.device('cuda:1')
 
 SEED = 1234
 FEAT2DSIZE = 64
@@ -23,7 +23,7 @@ class DDPG:
     GAMMA = 0.99
     TAU = 0.001
     LEARNINGRATE = 0.0001
-    BatchSize = 64
+    BatchSize = 128
     memory_limit = int(5e4)
 
 
