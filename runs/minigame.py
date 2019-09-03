@@ -41,37 +41,41 @@ class MiniGame:
 
         while True:
             for i_episode in range(self.nb_episodes):
-                try:
-                    state = self.env.reset()[0]
-                    for t in range(self.nb_max_steps):  # Don't infinite loop while learning
-                        obs = self.preprocess.get_observation(state)
-                        actions = self.learner.select_action(obs, valid_actions=obs['nonspatial'])
-                        state_new = self.env.step(actions=[actions])[0]
-                        # print(actions)
-                        # append memory
-                        actions = self.preprocess.postprocess_action(actions)
-                        self.learner.memory.append(obs, actions, state.reward, state.last(), training=is_training)
 
-                        self.learner.optimize(is_train=self.learner.iter % 8 == 0)
+                while True:
+                    try:
+                        state = self.env.reset()[0]
+                        break
+                    except ConnectionError:
+                        time.sleep(3.)
+                        continue
 
-                        if state.last():
-                            cum_reward = state.observation["score_cumulative"][0]
-                            # save networks
-                            if cum_reward >= cum_reward_best:
-                                self.learner.save_models(fname=self.map_name + '_ddpg')
-                                cum_reward_best = cum_reward
+                for t in range(self.nb_max_steps):  # Don't infinite loop while learning
+                    obs = self.preprocess.get_observation(state)
+                    actions = self.learner.select_action(obs, valid_actions=obs['nonspatial'])
+                    state_new = self.env.step(actions=[actions])[0]
+                    # print(actions)
+                    # append memory
+                    actions = self.preprocess.postprocess_action(actions)
+                    self.learner.memory.append(obs, actions, state.reward, state.last(), training=is_training)
 
-                            # write cululative reward for every episodes
-                            self.write_history(fname=self.map_name + '_history_ddpg.txt',
-                                               msg='episde: {}, step: {}, score: {}'.format(i_episode, self.learner.iter, cum_reward))
-                            break
-                        else:
-                            state = deepcopy(state_new)
+                    self.learner.optimize(is_train=self.learner.iter % 8 == 0)
 
-                        self.learner.iter += 1
-                    time.sleep(0.5)
-                except ConnectionError:
-                    pass
+                    if state.last():
+                        cum_reward = state.observation["score_cumulative"][0]
+                        # save networks
+                        if cum_reward >= cum_reward_best:
+                            self.learner.save_models(fname=self.map_name + '_ddpg')
+                            cum_reward_best = cum_reward
+
+                        # write cumulative reward for every episodes
+                        self.write_history(fname=self.map_name + '_history_ddpg.txt',
+                                           msg='episde: {}, step: {}, score: {}'.format(i_episode, self.learner.iter, cum_reward))
+                        break
+                    else:
+                        state = deepcopy(state_new)
+                    self.learner.iter += 1
+                time.sleep(0.1)
             self.env.close()
 
     def run_ppo(self, is_training=True):
