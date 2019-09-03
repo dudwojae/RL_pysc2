@@ -31,6 +31,7 @@ def main(_):
             critic = CriticNet()
             memory = SequentialMemory(limit=arglist.DDPG.memory_limit)
             learner = DDPGAgent(actor, critic, memory)
+            learner.load_models(map_name + '_ddpg')
 
         elif rl_algo == 'ppo':
             from agent.ppo import PPOAgent
