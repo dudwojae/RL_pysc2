@@ -195,17 +195,21 @@ class DDPGAgent(Agent):
         torch.save(self.target_critic.state_dict(), critic_file)
         print('Models saved successfully')
 
-    def load_models(self, fname):
+    def load_models(self, fname, load_dir='Models'):
         """
         loads the target actor and critic models, and copies them onto actor and critic models
         :param episode: the count of episodes iterated (used to find the file name)
         :return:
         """
-        self.actor.load_state_dict(torch.load(str(fname) + '_actor.pt'))
-        self.critic.load_state_dict(torch.load(str(fname) + '_critic.pt'))
+        actor_file = os.path.join(load_dir, str(fname) + '_actor.pt')
+        critic_file = os.path.join(load_dir, str(fname) + '_critic.pt')
+        
+        self.actor.load_state_dict(torch.load(actor_file))
+        self.critic.load_state_dict(torch.load(critic_file))
+        
         self.hard_update(self.target_actor, self.actor)
         self.hard_update(self.target_critic, self.critic)
-        print('Models loaded succesfully')
+        print('Models loaded successfully')
 
     def save_training_checkpoint(self, state, is_best, episode_count):
         """
